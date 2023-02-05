@@ -86,7 +86,7 @@ getcmd(char *buf, int nbuf)
 {
   
   if (isatty(fileno(stdin)))
-    fprintf(stdout, "$ ");
+    fprintf(stdout, "$23 ");
   memset(buf, 0, nbuf);
   fgets(buf, nbuf, stdin);
   if(buf[0] == 0) // EOF
