@@ -4,3 +4,6 @@
 [submodule "xv6-riscv-book"]
 	path = xv6-riscv-book
 	url = https://github.com/mit-pdos/xv6-riscv-book
+[submodule "xv6-riscv-modded-CS450"]
+	path = xv6-riscv-modded-CS450
+	url = https://github.com/franciscob1218/xv6-riscv-modded-CS450.git
