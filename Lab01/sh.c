@@ -25,7 +25,7 @@ struct execcmd {
 struct redircmd {
   int type;          // < or > 
   struct cmd *cmd;   // the command to be run (e.g., an execcmd)
-  char *file;        // the input/output file
+  char *file;        // the dasinput/output file
   int mode;          // the mode to open the file with
   int fd;            // the file descriptor number to use for the file
 };
@@ -57,13 +57,30 @@ runcmd(struct cmd *cmd)
     exit(-1);
 
   case ' ':
-    ecmd = (struct execcmd*)cmd;
+    ecmd = (struct  execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       exit(0);
-    fprintf(stderr, "exec not implemented\n");
+    
     // Your code here ...
-    break;
+    //fprintf(stderr, "exec not implemented\n");
+    
+    //This will test and display the arguments for the command to be executed that was captured from the user
+    //Start 
+    printf("These are the arguments in argv[]: ");
+    for (int i = 0; i < 10; i++)
+      if (ecmd->argv[i] != NULL)
+        printf("%s ", ecmd->argv[i]);
+    printf("\n");
+    //END
 
+    //execvp will be used here because the first argument requests a program name, then the second argument is a array of the arguments for the program we intend to execute
+    // Here we will create the first argument from the first item in the array
+    char *programname = ecmd->argv[0];
+    // then here we will use the argv[] array and the program name to execute the command
+    execvp(programname, ecmd->argv);
+
+    break;
+ 
   case '>':
   case '<':
     rcmd = (struct redircmd*)cmd;
@@ -86,7 +103,7 @@ getcmd(char *buf, int nbuf)
 {
   
   if (isatty(fileno(stdin)))
-    fprintf(stdout, "$23 ");
+    fprintf(stdout, "$S23 ");
   memset(buf, 0, nbuf);
   fgets(buf, nbuf, stdin);
   if(buf[0] == 0) // EOF
