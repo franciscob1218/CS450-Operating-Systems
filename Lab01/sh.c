@@ -36,6 +36,7 @@ struct pipecmd {
   struct cmd *right; // right side of pipe
 };
 
+
 int fork1(void);  // Fork but exits on failure.
 struct cmd *parsecmd(char*);
 
@@ -57,7 +58,7 @@ runcmd(struct cmd *cmd)
     exit(-1);
 
   case ' ':
-    ecmd = (struct  execcmd*)cmd;
+    ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       exit(0);
     
@@ -67,9 +68,13 @@ runcmd(struct cmd *cmd)
     //This will test and display the arguments for the command to be executed that was captured from the user
     //Start 
     printf("These are the arguments in argv[]: ");
-    for (int i = 0; i < 10; i++)
-      if (ecmd->argv[i] != NULL)
+
+    for (int i = 0; i < 10; i++){
+      if (ecmd->argv[i] != NULL){
+        printf("%d ", i);
         printf("%s ", ecmd->argv[i]);
+      }
+    }
     printf("\n");
     //END
 
@@ -78,9 +83,8 @@ runcmd(struct cmd *cmd)
     char *programname = ecmd->argv[0];
     // then here we will use the argv[] array and the program name to execute the command
     execvp(programname, ecmd->argv);
-
     break;
- 
+
   case '>':
   case '<':
     rcmd = (struct redircmd*)cmd;
