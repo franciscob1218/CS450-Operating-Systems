@@ -36,6 +36,12 @@ struct pipecmd {
   struct cmd *right; // right side of pipe
 };
 
+struct listcmd {
+  int type;          // |
+  struct cmd *left;  // left side of pipe
+  struct cmd *right; // right side of pipe
+};
+
 
 int fork1(void);  // Fork but exits on failure.
 struct cmd *parsecmd(char*);
@@ -48,6 +54,7 @@ runcmd(struct cmd *cmd)
   struct execcmd *ecmd;
   struct pipecmd *pcmd;
   struct redircmd *rcmd;
+  struct listcmd *lcmd;
 
   if(cmd == 0)
     exit(0);
@@ -83,6 +90,14 @@ runcmd(struct cmd *cmd)
     char *programname = ecmd->argv[0];
     // then here we will use the argv[] array and the program name to execute the command
     execvp(programname, ecmd->argv);
+    break;
+
+  case ';':
+    lcmd = (struct listcmd*)cmd;
+    if(fork1() == 0)
+      runcmd(lcmd->left);
+    wait();
+    runcmd(lcmd->right);
     break;
 
   case '>':
@@ -188,10 +203,24 @@ pipecmd(struct cmd *left, struct cmd *right)
   return (struct cmd*)cmd;
 }
 
+struct cmd*
+listcmd(struct cmd *left, struct cmd *right)
+{
+  // printf(1, "listcmd has been executed \n");
+  struct listcmd *cmd;
+
+  cmd = malloc(sizeof(*cmd));
+  memset(cmd, 0, sizeof(*cmd));
+  cmd->type = ';';
+  cmd->left = left;
+  cmd->right = right;
+  return (struct cmd*)cmd;
+}
+
 // Parsing
 
 char whitespace[] = " \t\r\n\v";
-char symbols[] = "<|>";
+char symbols[] = "<|>;";
 
 int
 gettoken(char **ps, char *es, char **q, char **eq)
@@ -208,7 +237,11 @@ gettoken(char **ps, char *es, char **q, char **eq)
   switch(*s){
   case 0:
     break;
+
   case '|':
+  case ';':
+    s++;
+    break;
   case '<':
     s++;
     break;
@@ -279,7 +312,12 @@ struct cmd*
 parseline(char **ps, char *es)
 {
   struct cmd *cmd;
+
   cmd = parsepipe(ps, es);
+  if(peek(ps, es, ";")){
+    gettoken(ps, es, 0, 0);
+    cmd = listcmd(cmd, parseline(ps, es));
+  }
   return cmd;
 }
 
@@ -333,7 +371,7 @@ parseexec(char **ps, char *es)
 
   argc = 0;
   ret = parseredirs(ret, ps, es);
-  while(!peek(ps, es, "|")){
+  while(!peek(ps, es, "|;")){
     if((tok=gettoken(ps, es, &q, &eq)) == 0)
       break;
     if(tok != 'a') {
