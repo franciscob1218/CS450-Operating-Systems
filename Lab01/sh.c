@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <log.h>
+#include "log.h"
 
 // Simplifed xv6 shell.
 
@@ -66,17 +66,8 @@ runcmd(struct cmd *cmd)
     exit(-1);
 
   case ' ':
-    ecmd = (struct execcmd*)cmd;
-    if(ecmd->argv[0] == 0)
-      exit(0);
-    
-    // Your code here ...
-    //fprintf(stderr, "exec not implemented\n");
-    
-    //This will test and display the arguments for the command to be executed that was captured from the user
-    //Start 
-    printf("These are the arguments in argv[]: ");
 
+    printf("These are the arguments in argv[]: ");
     for (int i = 0; i < 10; i++){
       if (ecmd->argv[i] != NULL){
         printf("%d ", i);
@@ -84,14 +75,16 @@ runcmd(struct cmd *cmd)
       }
     }
     printf("\n");
-    //END
 
-    //execvp will be used here because the first argument requests a program name, then the second argument is a array of the arguments for the program we intend to execute
-    // Here we will create the first argument from the first item in the array
-    char *programname = ecmd->argv[0];
-    // then here we will use the argv[] array and the program name to execute the command
-    execvp(programname, ecmd->argv);
-    break;
+    if(strcmp(ecmd->argv[0],"nonohup")==0){
+
+    }
+    else{
+      printf("THIS COMMAND IS NOT NONOHUP \n");
+      execvp(ecmd->argv[0], &(ecmd->argv[0]));
+      printf("Command %s Failed / Not found\n", ecmd->argv[0]);
+    }
+
 
   case ';':
     lcmd = (struct listcmd*)cmd;
@@ -115,7 +108,7 @@ runcmd(struct cmd *cmd)
     // Your code here ...
     break;
   }    
-  exit(0);
+  exit(1);
 }
 
 int
@@ -123,7 +116,7 @@ getcmd(char *buf, int nbuf)
 {
   
   if (isatty(fileno(stdin)))
-    fprintf(stdout, "$S23 ");
+    fprintf(stdout, "\n $S23 ");
   memset(buf, 0, nbuf);
   fgets(buf, nbuf, stdin);
   if(buf[0] == 0) // EOF
@@ -221,7 +214,7 @@ listcmd(struct cmd *left, struct cmd *right)
 // Parsing
 
 char whitespace[] = " \t\r\n\v";
-char symbols[] = "<|>;";
+char symbols[] = "<|>;"; // ; was added to the symbols here so that it is used by gettoken
 
 int
 gettoken(char **ps, char *es, char **q, char **eq)
@@ -240,7 +233,7 @@ gettoken(char **ps, char *es, char **q, char **eq)
     break;
 
   case '|':
-  case ';':
+  case ';': //this case was added to make ; work 
     s++;
     break;
   case '<':
