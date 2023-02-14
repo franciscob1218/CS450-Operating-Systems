@@ -6,8 +6,9 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "log.h"
 #include <sys/wait.h>
+#include <sys/fcntl.h>
+#include <sys/user.h>
 
 // Simplifed xv6 shell.
 
