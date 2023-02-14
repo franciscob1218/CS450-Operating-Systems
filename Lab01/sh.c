@@ -66,24 +66,24 @@ runcmd(struct cmd *cmd)
     exit(-1);
 
   case ' ':
-
-    printf("These are the arguments in argv[]: ");
-    for (int i = 0; i < 10; i++){
-      if (ecmd->argv[i] != NULL){
-        printf("%d ", i);
-        printf("%s ", ecmd->argv[i]);
+    // printf(2, "runcmd EXEC has started execution \n");
+    ecmd = (struct execcmd*)cmd;
+    if(ecmd->argv[0] == 0){
+      exit(0);
+    }
+    // checks if the first argument of the execute funciton is nonohup
+    else if(strcmp(ecmd->argv[0],"nonohup")==0){
+      
+      if(fork1() == 0){
+        execvp(ecmd->argv[1], &(ecmd->argv[1]));
       }
     }
-    printf("\n");
-
-    if(strcmp(ecmd->argv[0],"nonohup")==0){
-
-    }
+    // every other argument will run in a regular way
     else{
-      printf("THIS COMMAND IS NOT NONOHUP \n");
-      execvp(ecmd->argv[0], &(ecmd->argv[0]));
-      printf("Command %s Failed / Not found\n", ecmd->argv[0]);
+      execvp(ecmd->argv[0], ecmd->argv);
+      printf("exec %s failed\n", ecmd->argv[0]);
     }
+    break;
 
 
   case ';':
