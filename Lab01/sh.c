@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "log.h"
+#include <sys/wait.h>
 
 // Simplifed xv6 shell.
 
@@ -77,6 +78,7 @@ runcmd(struct cmd *cmd)
       if(fork1() == 0){
         execvp(ecmd->argv[1], &(ecmd->argv[1]));
       }
+      wait(0);
     }
     // every other argument will run in a regular way
     else{
@@ -90,7 +92,7 @@ runcmd(struct cmd *cmd)
     lcmd = (struct listcmd*)cmd;
     if(fork1() == 0)
       runcmd(lcmd->left);
-    wait();
+    
     runcmd(lcmd->right);
     break;
 
