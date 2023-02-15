@@ -54,5 +54,6 @@ int main(int argc, char *argv[]){
   if (fd > 0){ // if and input file was oppened then close it
     close(fd); // close the input file
   }
+  printf("\n  The parent and child files have been made!\n");
   exit(0); //exit the program with success
 }
