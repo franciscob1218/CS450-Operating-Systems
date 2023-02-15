@@ -83,7 +83,7 @@ void runcmd(struct cmd *cmd){
 		break;                                            //The case breaks here
 
 	case ';':
-		bcmd = (struct listcmd*)cmd;     //execcmd is initially called here
+		bcmd = (struct bothcmd*)cmd;     //execcmd is initially called here
 		if(fork1() == 0){                //This creates a fork and the left side of the command is run
 			runcmd(bcmd->left);            //The left side is run
 		}
@@ -109,7 +109,7 @@ void runcmd(struct cmd *cmd){
 
 int getcmd(char *buf, int nbuf){
 	if (isatty(fileno(stdin))){
-		fprintf(stdout, "$ ");
+		fprintf(stdout, "\n$S23");
 	}
 	memset(buf, 0, nbuf);
 	fgets(buf, nbuf, stdin);

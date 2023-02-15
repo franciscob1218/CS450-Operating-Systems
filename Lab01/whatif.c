@@ -9,44 +9,46 @@
 #include <sys/wait.h>
 #include <sys/fcntl.h>
 
-int main(int argc, char *argv[]) {
-    int fd = 0;
-    if (argc == 2) { // Check for input file argument
-        fd = open(argv[1], O_RDONLY);
-        if (fd < 0) {
-            fprintf(stderr, "File %s does not exist\n", argv[1]);
-            exit(1);
-        }
+int main(int argc, char *argv[]){
+  int fd = 0; // init the file discriptor to zero
+  if (argc == 2){ // Check for input from file argument
+    fd = open(argv[1], O_RDONLY); // open the file in a read only format
+    if (fd < 0){ // check if there is a issue opening the file
+      fprintf(stderr, "File %s does not exist\n", argv[1]); //print error msg about opening the file
+      exit(1); //exit as a failure
     }
+  }
 
-    int chld = open("child.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644); // Create child.txt file
-    int prnt = open("parent.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644); // Create parent.txt file
-    if (chld < 0 || prnt < 0) {
-        perror("Failed to create output files");
-        exit(1);
-    }
+  int chld = open("child.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);  // Create child.txt file in write only permissions and trunc old file
+  int prnt = open("parent.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644); // Create parent.txt file in write only permissions and trunc old file
+  if (chld < 0 || prnt < 0){ // check if either file has a issue opening
+    perror("Failed to create output files"); // flag error
+    exit(1); //exit as a failure
+  }
 
-    char buf[512];
-    while (fgets(buf, sizeof(buf), fd != 0 ? fdopen(fd, "r") : stdin) != NULL) {
-        pid_t pid = fork();
-        if (pid < 0) {
-            perror("Failed to fork process");
-            exit(1);
-        } else if (pid == 0) {
-            // Child process
-            write(chld, buf, strlen(buf));
-            exit(0);
-        } else {
-            // Parent process
-            write(prnt, buf, strlen(buf));
-            wait(NULL);
-        }
+  char buf[512]; // buffer to hold chars
+  while (fgets(buf, sizeof(buf), fd != 0 ? fdopen(fd, "r") : stdin) != NULL){ // read input from user or from file and store in buffer
+    pid_t pid = fork(); // Create a child
+    if (pid < 0){ // check if child creation failed
+      perror("Failed to fork process"); // flag error
+      exit(1); //exit as a failure
     }
+    else if (pid == 0){ // is this the child program
+      // Child
+      write(chld, buf, strlen(buf)); // write from the buffer to the child file 
+      exit(0); //exit child with success
+    }
+    else{
+      // Parent
+      write(prnt, buf, strlen(buf)); // write from the buffer to the parent file 
+      wait(NULL); //wait for child to finish 
+    }
+  }
 
-    close(chld);
-    close(prnt);
-    if (fd > 0) {
-        close(fd);
-    }
-    exit(0);
+  close(chld); // close child file
+  close(prnt); // close parent file
+  if (fd > 0){ // if and input file was oppened then close it
+    close(fd); // close the input file
+  }
+  exit(0); //exit the program with success
 }
