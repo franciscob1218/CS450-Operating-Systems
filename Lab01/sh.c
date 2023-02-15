@@ -74,7 +74,7 @@ void runcmd(struct cmd *cmd){
 			if (fork1() == 0){                              //if it is then the shell will create a fork here and the child will run.
 				execvp(ecmd->argv[1], &(ecmd->argv[1]));      //this sends through the command using the execvp command
 			}
-			wait(0);                                        //the child is asked to wait for the parent here
+			wait(NULL);                                     //the child is asked to wait for the parent here
 		}
 		else{                                             //else any command is executed normally
 			execvp(ecmd->argv[0], ecmd->argv);              //here the normal non nonohup command is sent through
@@ -87,6 +87,7 @@ void runcmd(struct cmd *cmd){
 		if(fork1() == 0){                //This creates a fork and the left side of the command is run
 			runcmd(bcmd->left);            //The left side is run
 		}
+		wait(NULL);
 		runcmd(bcmd->right);             //The right side is run
 		break;                           //The case breaks here
 
