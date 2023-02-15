@@ -109,7 +109,7 @@ void runcmd(struct cmd *cmd){
 
 int getcmd(char *buf, int nbuf){
 	if (isatty(fileno(stdin))){
-		fprintf(stdout, "\n$S23");
+		fprintf(stdout, "\n$S23 ");
 	}
 	memset(buf, 0, nbuf);
 	fgets(buf, nbuf, stdin);
