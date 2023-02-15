@@ -1,0 +1,53 @@
+.TH WHATIF 1 "February 2023" "1.0" "whatif man page"
+
+.SH NAME
+whatif - write input data to parent and child output files
+
+.SH SYNOPSIS
+.B whatif
+[FILE]
+
+.SH DESCRIPTION
+.B whatif
+reads input data from a file or standard input and writes it to two output files: "child.txt" and "parent.txt". Each line of input data is written to both output files in parallel using two separate processes.
+
+If a FILE argument is provided, the program reads input data from that file. If no FILE argument is provided, the program reads input data from standard input.
+
+.SH OPTIONS
+The following options are supported:
+
+.TP
+.B FILE
+The name of the input file to read from.
+
+.SH RETURN VALUE
+.B whatif
+exits with a status of 0 on success, or a non-zero status on failure.
+
+.SH EXAMPLES
+To write input data from a file called "input.txt" to the output files "child.txt" and "parent.txt", run the following command:
+
+.B whatif input.txt
+
+To write input data from standard input to the output files "child.txt" and "parent.txt", run the following command:
+
+.B whatif
+
+.SH FILES
+.TP
+.B child.txt
+Output file for child process.
+
+.TP
+.B parent.txt
+Output file for parent process.
+
+.SH SEE ALSO
+fork(2), wait(2), open(2), fgets(3), write(2), perror(3), exit(3)
+
+.SH BUGS
+None known.
+
+.SH AUTHOR
+Francisco Barba Cuellar (fbarba@hawk.iit.edu)
+
