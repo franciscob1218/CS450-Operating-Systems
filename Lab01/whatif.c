@@ -19,15 +19,19 @@ int main(int argc, char *argv[]){
     }
   }
 
-  int chld = open("child.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);  // Create child.txt file in write only permissions and trunc old file
-  int prnt = open("parent.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644); // Create parent.txt file in write only permissions and trunc old file
+  int chld = open("child.txt", O_CREAT | O_WRONLY | O_APPEND, 0644);  // Create child.txt file in write only permissions and APPEND old file
+  int prnt = open("parent.txt", O_CREAT | O_WRONLY | O_APPEND, 0644); // Create parent.txt file in write only permissions and APPEND old file
   if (chld < 0 || prnt < 0){ // check if either file has a issue opening
     perror("Failed to create output files"); // flag error
     exit(1); //exit as a failure
   }
 
   char buf[512]; // buffer to hold chars
-  while (fgets(buf, sizeof(buf), fd != 0 ? fdopen(fd, "r") : stdin) != NULL){ // read input from user or from file and store in buffer
+  while (1){ // read input from user or from file and store in buffer
+    int n = read(fd, buf, sizeof(buf));
+    if (n <= 0){
+      break;
+    }
     pid_t pid = fork(); // Create a child
     if (pid < 0){ // check if child creation failed
       perror("Failed to fork process"); // flag error
@@ -35,12 +39,12 @@ int main(int argc, char *argv[]){
     }
     else if (pid == 0){ // is this the child program
       // Child
-      write(chld, buf, strlen(buf)); // write from the buffer to the child file 
+      write(chld, buf, n); // write from the buffer to the child file 
       exit(0); //exit child with success
     }
     else{
       // Parent
-      write(prnt, buf, strlen(buf)); // write from the buffer to the parent file 
+      write(prnt, buf, n); // write from the buffer to the parent file 
       wait(NULL); //wait for child to finish 
     }
   }
