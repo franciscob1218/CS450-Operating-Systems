@@ -1,8 +1,12 @@
+Deimantas Gilys #A20434583
+Francisco Barba Cuellar #A20121767
+Nathan Cook #A20458336
+
 this readme refers to how to run part 1.
 
 I have generated the output programs of each of my test cases in the form of memLeaker_X. The last made program is memLeaker.c.
 
-To run you need to use either built in GDB so command:
+To run you need to use either builtin GDB... so command:
 
 "gdb ./memLeaker_X"
 
